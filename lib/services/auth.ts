@@ -3,8 +3,10 @@ import {
   signOut as firebaseSignOut,
   onAuthStateChanged,
   User,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from 'firebase/auth'
-import { doc, getDoc } from 'firebase/firestore'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { auth, db } from '@/lib/firebase/config'
 import { UserProfile } from '@/types/firestore'
 
@@ -15,12 +17,6 @@ import { UserProfile } from '@/types/firestore'
  */
 
 /**
- * Manager credentials (sole manager account)
- */
-const MANAGER_EMAIL = 'manager@salonflow.com'
-const MANAGER_PASSWORD = 'manager123'
-
-/**
  * Sign in with email and password
  *
  * Authenticates a user with their email and password and retrieves their profile from Firestore.
@@ -29,17 +25,6 @@ const MANAGER_PASSWORD = 'manager123'
  * @param password - User password
  * @returns Promise<UserProfile> - User profile
  * @throws Error if authentication fails or profile not found
- *
- * @example
- * ```tsx
- * try {
- *   const user = await signInWithCredentials('manager@salonflow.com', 'password123')
- *   authStore.login(user)
- *   router.push('/manager/dashboard')
- * } catch (error) {
- *   toast.error('Invalid credentials')
- * }
- * ```
  */
 export async function signInWithCredentials(
   email: string,
@@ -74,26 +59,46 @@ export async function signInWithCredentials(
 }
 
 /**
- * Sign in as the manager user
+ * Sign in with Google using a popup
  *
- * Authenticates the sole manager account and retrieves their profile from Firestore.
+ * Authenticates a user with their Google account and retrieves/creates their profile in Firestore.
  *
- * @returns Promise<UserProfile> - Manager user profile
- * @throws Error if authentication fails or profile not found
- *
- * @example
- * ```tsx
- * try {
- *   const manager = await signInAsManager()
- *   authStore.login(manager)
- *   router.push('/manager/dashboard')
- * } catch (error) {
- *   toast.error('Failed to sign in')
- * }
- * ```
+ * @returns Promise<UserProfile> - User profile
+ * @throws Error if authentication fails
  */
-export async function signInAsManager(): Promise<UserProfile> {
-  return signInWithCredentials(MANAGER_EMAIL, MANAGER_PASSWORD)
+export async function signInWithGoogle(): Promise<UserProfile> {
+  try {
+    const provider = new GoogleAuthProvider()
+    const result = await signInWithPopup(auth, provider)
+    const user = result.user
+
+    // Check if user profile exists in Firestore, create if not
+    const userProfile = await getUserProfile(user.uid).catch(async () => {
+      // If profile not found, create a basic one
+      const newProfile: UserProfile = {
+        id: user.uid,
+        username: user.displayName || 'Google User',
+        email: user.email || '',
+        role: 'barber', // Default role, can be changed by manager later
+        createdAt: new Date(),
+      }
+      await setDoc(doc(db, 'users', user.uid), newProfile)
+      return newProfile
+    })
+
+    return userProfile
+  } catch (error) {
+    console.error('Google sign-in failed:', error)
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      (error as { code: unknown }).code === 'auth/popup-closed-by-user'
+    ) {
+      throw new Error('Google sign-in popup closed.')
+    }
+    throw new Error('Failed to sign in with Google. Please try again.')
+  }
 }
 
 /**
