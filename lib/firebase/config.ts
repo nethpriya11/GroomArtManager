@@ -22,6 +22,15 @@ const firebaseConfig = {
  * Validate Firebase configuration
  */
 function validateFirebaseConfig() {
+  console.log("--- Debugging Environment Variables ---");
+  console.log("NEXT_PUBLIC_FIREBASE_API_KEY:", process.env.NEXT_PUBLIC_FIREBASE_API_KEY ? "FOUND" : "MISSING");
+  console.log("NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN:", process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ? "FOUND" : "MISSING");
+  console.log("NEXT_PUBLIC_FIREBASE_PROJECT_ID:", process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ? "FOUND" : "MISSING");
+  console.log("NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET:", process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET ? "FOUND" : "MISSING");
+  console.log("NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID:", process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID ? "FOUND" : "MISSING");
+  console.log("NEXT_PUBLIC_FIREBASE_APP_ID:", process.env.NEXT_PUBLIC_FIREBASE_APP_ID ? "FOUND" : "MISSING");
+  console.log("------------------------------------");
+
   const requiredKeys = [
     'apiKey',
     'authDomain',
