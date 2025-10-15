@@ -1,0 +1,104 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions for authentication and authorization
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function getUserRole() {
+      return request.auth.token.role;
+    }
+
+    function isManager() {
+      return isAuthenticated() && getUserRole() == 'manager';
+    }
+
+    function isBarber() {
+      return isAuthenticated() && getUserRole() == 'barber';
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Users collection rules
+    match /users/{userId} {
+      // Anyone can read barber profiles (for login selection)
+      // Managers can read all users
+      // Barbers can read their own profile
+      allow read: if resource.data.role == 'barber' || isManager() || isOwner(userId);
+
+      // Only managers can create user profiles
+      allow create: if isManager();
+
+      // Managers can update any user
+      // Barbers can update their own profile (but not role or email)
+      allow update: if isManager() ||
+                      (isOwner(userId) &&
+                       !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'email']));
+
+      // Only managers can delete users
+      allow delete: if isManager();
+    }
+
+    // Services collection rules
+    match /services/{serviceId} {
+      // All authenticated users can read services
+      allow read: if isAuthenticated();
+
+      // Only managers can create, update, or delete services
+      allow create, update, delete: if isManager();
+    }
+
+    // Service logs collection rules
+    match /serviceLogs/{logId} {
+      // Managers can read all logs
+      // Barbers can only read their own logs
+      allow read: if isManager() ||
+                    (isBarber() && resource.data.barberId == request.auth.uid);
+
+      // Barbers can create logs for themselves
+      // Must set barberId to their own UID and status to 'pending'
+      allow create: if isBarber() &&
+                      request.resource.data.barberId == request.auth.uid &&
+                      request.resource.data.status == 'pending' &&
+                      request.resource.data.keys().hasAll(['barberId', 'serviceId', 'price', 'commissionRate', 'commissionAmount', 'status', 'createdAt']) &&
+                      request.resource.data.approvedAt == null &&
+                      request.resource.data.rejectedAt == null;
+
+      // Managers can create logs for any barber
+      allow create: if isManager();
+
+      // Only managers can update logs (approve/reject)
+      // Barbers cannot update their own logs after creation
+      allow update: if isManager();
+
+      // Only managers can delete logs
+      allow delete: if isManager();
+    }
+
+    // Daily reports collection rules
+    match /dailyReports/{reportId} {
+      // Only managers can read daily reports
+      allow read: if isManager();
+
+      // Only managers can create daily reports
+      allow create: if isManager();
+
+      // Only managers can update daily reports (in case corrections are needed)
+      allow update: if isManager();
+
+      // Only managers can delete daily reports
+      allow delete: if isManager();
+    }
+
+    // Inventory Items collection rules
+    match /inventoryItems/{itemId} {
+      // Only managers can create, read, update, or delete inventory items
+      allow read, create, update, delete: if isManager();
+    }
+  }
+}

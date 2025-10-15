@@ -1,0 +1,12 @@
+node_modules
+.next
+.vercel
+out
+dist
+build
+coverage
+*.lock
+*.log
+.env*
+!.env.example
+public
