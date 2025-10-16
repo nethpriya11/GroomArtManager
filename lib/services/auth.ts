@@ -1,3 +1,5 @@
+import { UserProfile } from '@/types/firestore';
+
 export async function signInWithCredentials(
   email: string,
   password: string
