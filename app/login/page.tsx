@@ -234,7 +234,7 @@ export default function LoginPage() {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="manager@salonflow.com"
+                    placeholder="nethpriyamanubhashitha@gmail.com"
                     {...register('email')}
                     disabled={loading}
                     className="bg-gray-800/60 border-gray-700 text-white h-12 text-base"
@@ -285,7 +285,7 @@ export default function LoginPage() {
 
               {/* Helper Text */}
               <p className="mt-6 text-xs text-gray-500 text-center">
-                Default credentials: manager@salonflow.com / manager123
+                Default credentials: nethpriyamanubhashitha@gmail.com / manager123
               </p>
             </div>
           </div>
