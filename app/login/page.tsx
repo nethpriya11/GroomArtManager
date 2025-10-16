@@ -14,8 +14,6 @@ import {
   signInWithCredentials,
   signInAsManager,
   signInWithGoogle,
-  signInAsHardcodedManager,
-  signInAsHardcodedBarber,
 } from '@/lib/services/auth'
 import { useAuthStore } from '@/stores/authStore'
 import { handleError } from '@/lib/utils/error-handler'
@@ -54,10 +52,10 @@ export default function LoginPage() {
    *
    * Authenticates manager with email and password and redirects to manager dashboard.
    */
-  async function handleManagerLogin(data: Omit<LoginInput, 'email'>) {
+  async function handleManagerLogin(data: LoginInput) {
     setLoading(true)
     try {
-      const user = await signInAsManager()
+      const user = await signInWithCredentials(data.email, data.password)
 
       if (user.role !== 'manager') {
         toast.error('Invalid credentials. Please use manager account.')
@@ -228,6 +226,26 @@ export default function LoginPage() {
                 onSubmit={handleSubmit(handleManagerLogin)}
                 className="space-y-6"
               >
+                {/* Email Field */}
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-gray-300">
+                    Email
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="manager@salonflow.com"
+                    {...register('email')}
+                    disabled={loading}
+                    className="bg-gray-800/60 border-gray-700 text-white h-12 text-base"
+                  />
+                  {errors.email && (
+                    <p className="text-sm text-red-500 pt-1">
+                      {errors.email.message}
+                    </p>
+                  )}
+                </div>
+
                 {/* Password Field */}
                 <div className="space-y-2">
                   <Label htmlFor="password" className="text-gray-300">
