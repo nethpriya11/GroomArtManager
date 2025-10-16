@@ -10,7 +10,13 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Spinner } from '@/components/ui/spinner'
 import { BarberProfileSelection } from '@/components/features/auth/BarberProfileSelection'
-import { signInWithCredentials } from '@/lib/services/auth'
+import {
+  signInWithCredentials,
+  signInAsManager,
+  signInWithGoogle,
+  signInAsHardcodedManager,
+  signInAsHardcodedBarber,
+} from '@/lib/services/auth'
 import { useAuthStore } from '@/stores/authStore'
 import { handleError } from '@/lib/utils/error-handler'
 import { loginSchema, type LoginInput } from '@/lib/validations/schemas'
@@ -63,6 +69,38 @@ export default function LoginPage() {
       router.push('/manager/dashboard')
     } catch (error) {
       handleError(error, 'LoginPage.handleManagerLogin')
+      if (error instanceof Error) {
+        toast.error(error.message)
+      } else {
+        toast.error('An unexpected error occurred.')
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  /**
+   * Handle Google login
+   *
+   * Authenticates user with Google and redirects to appropriate dashboard.
+   */
+  async function handleGoogleLogin() {
+    setLoading(true)
+    try {
+      const user = await signInWithGoogle()
+
+      login(user)
+      toast.success('Welcome back!')
+      if (user.role === 'manager') {
+        router.push('/manager/dashboard')
+      } else if (user.role === 'barber') {
+        router.push('/barber/dashboard')
+      } else {
+        // Handle other roles or default redirect
+        router.push('/')
+      }
+    } catch (error) {
+      handleError(error, 'LoginPage.handleGoogleLogin')
       if (error instanceof Error) {
         toast.error(error.message)
       } else {
@@ -143,6 +181,26 @@ export default function LoginPage() {
               <div className="flex items-center gap-3">
                 <Users className="h-6 w-6" />
                 <span>Barber</span>
+              </div>
+            </Button>
+
+            {/* Google Sign-In Button */}
+            <Button
+              className="w-full h-16 text-lg bg-blue-600/50 border-blue-700 hover:bg-blue-700/80 hover:text-white transition-all duration-300 transform hover:scale-105"
+              variant="outline"
+              size="lg"
+              onClick={handleGoogleLogin}
+              disabled={loading}
+              aria-label="Sign in with Google"
+            >
+              <div className="flex items-center gap-3">
+                <svg className="h-6 w-6" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M44.5 20H24v8.5h11.8C34.7 33.9 30.1 37.5 24 37.5c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.1 29.6 2 24 2 12.9 2 3.5 11.4 3.5 22.5S12.9 43 24 43c10.6 0 19.2-7.8 19.2-19.5 0-1.3-.2-2.6-.4-3.8z" fill="#FFC107"/>
+                  <path d="M6.5 24.5c0-1.6.3-3.2.8-4.7l-5.2-4C1.1 18.3 0 21.3 0 24.5c0 3.2 1.1 6.2 3.1 8.8l5.2-4c-.5-1.5-.8-3.1-.8-4.8z" fill="#FF3D00"/>
+                  <path d="M24 43c-4.7 0-9-1.4-12.7-3.8l-5.2 4c3.8 2.9 8.6 4.7 12.9 4.7 10.6 0 19.2-7.8 19.2-19.5 0-1.3-.2-2.6-.4-3.8l-6.4 6.4c.2 1.2.4 2.4.4 3.8 0 5.2-4.2 9.5-9.5 9.5z" fill="#4CAF50"/>
+                  <path d="M44.5 20H24v8.5h11.8c-.7 4.6-5.2 8.1-11.8 8.1-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.1 29.6 2 24 2 12.9 2 3.5 11.4 3.5 22.5S12.9 43 24 43c10.6 0 19.2-7.8 19.2-19.5 0-1.3-.2-2.6-.4-3.8z" fill="#1976D2"/>
+                </svg>
+                <span>Sign in with Google</span>
               </div>
             </Button>
           </div>

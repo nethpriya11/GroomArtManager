@@ -1,46 +1,3 @@
-import {
-  signInWithEmailAndPassword,
-  signOut as firebaseSignOut,
-  onAuthStateChanged,
-  User,
-} from 'firebase/auth'
-import { doc, getDoc } from 'firebase/firestore'
-import { auth, db } from '@/lib/firebase/config'
-import { UserProfile } from '@/types/firestore'
-
-/**
- * Authentication service for Firebase Auth
- *
- * Handles user authentication and profile retrieval from Firestore.
- */
-
-/**
- * Manager credentials (sole manager account)
- */
-const MANAGER_EMAIL = 'manager@salonflow.com'
-const MANAGER_PASSWORD = 'manager123'
-
-/**
- * Sign in with email and password
- *
- * Authenticates a user with their email and password and retrieves their profile from Firestore.
- *
- * @param email - User email address
- * @param password - User password
- * @returns Promise<UserProfile> - User profile
- * @throws Error if authentication fails or profile not found
- *
- * @example
- * ```tsx
- * try {
- *   const user = await signInWithCredentials('manager@salonflow.com', 'password123')
- *   authStore.login(user)
- *   router.push('/manager/dashboard')
- * } catch (error) {
- *   toast.error('Invalid credentials')
- * }
- * ```
- */
 export async function signInWithCredentials(
   email: string,
   password: string
@@ -74,26 +31,80 @@ export async function signInWithCredentials(
 }
 
 /**
- * Sign in as the manager user
+ * Sign in as a hardcoded manager (INSECURE - FOR NON-COMMERCIAL USE ONLY)
  *
- * Authenticates the sole manager account and retrieves their profile from Firestore.
+ * Directly retrieves the manager profile from Firestore without Firebase Auth.
+ * This bypasses authentication and is highly insecure.
+ * The UID must correspond to a manager user in Firestore.
  *
  * @returns Promise<UserProfile> - Manager user profile
- * @throws Error if authentication fails or profile not found
- *
- * @example
- * ```tsx
- * try {
- *   const manager = await signInAsManager()
- *   authStore.login(manager)
- *   router.push('/manager/dashboard')
- * } catch (error) {
- *   toast.error('Failed to sign in')
- * }
- * ```
+ * @throws Error if profile not found
  */
-export async function signInAsManager(): Promise<UserProfile> {
-  return signInWithCredentials(MANAGER_EMAIL, MANAGER_PASSWORD)
+export async function signInAsHardcodedManager(): Promise<UserProfile> {
+  console.warn('WARNING: Using insecure hardcoded manager login.')
+  // Replace with the actual UID of your manager user in Firestore
+  const managerUid = 'YOUR_MANAGER_UID_HERE' 
+  return getUserProfile(managerUid)
+}
+
+/**
+ * Sign in as a hardcoded barber (INSECURE - FOR NON-COMMERCIAL USE ONLY)
+ *
+ * Directly retrieves a barber profile from Firestore without Firebase Auth.
+ * This bypasses authentication and is highly insecure.
+ * The UID must correspond to a barber user in Firestore.
+ *
+ * @returns Promise<UserProfile> - Barber user profile
+ * @throws Error if profile not found
+ */
+export async function signInAsHardcodedBarber(): Promise<UserProfile> {
+  console.warn('WARNING: Using insecure hardcoded barber login.')
+  // Replace with the actual UID of a barber user in Firestore
+  const barberUid = 'YOUR_BARBER_UID_HERE' 
+  return getUserProfile(barberUid)
+}
+
+/**
+ * Sign in with Google using a popup
+ *
+ * Authenticates a user with their Google account and retrieves/creates their profile in Firestore.
+ *
+ * @returns Promise<UserProfile> - User profile
+ * @throws Error if authentication fails
+ */
+export async function signInWithGoogle(): Promise<UserProfile> {
+  try {
+    const provider = new GoogleAuthProvider()
+    const result = await signInWithPopup(auth, provider)
+    const user = result.user
+
+    // Check if user profile exists in Firestore, create if not
+    const userProfile = await getUserProfile(user.uid).catch(async () => {
+      // If profile not found, create a basic one
+      const newProfile: UserProfile = {
+        id: user.uid,
+        username: user.displayName || 'Google User',
+        email: user.email || '',
+        role: 'barber', // Default role, can be changed by manager later
+        createdAt: new Date(),
+      }
+      await setDoc(doc(db, 'users', user.uid), newProfile)
+      return newProfile
+    })
+
+    return userProfile
+  } catch (error) {
+    console.error('Google sign-in failed:', error)
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      (error as { code: unknown }).code === 'auth/popup-closed-by-user'
+    ) {
+      throw new Error('Google sign-in popup closed.')
+    }
+    throw new Error('Failed to sign in with Google. Please try again.')
+  }
 }
 
 /**
