@@ -7,7 +7,13 @@ import {
   onAuthStateChanged,
   User,
 } from 'firebase/auth'
-import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore'
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  Timestamp,
+} from 'firebase/firestore'
 import { auth, db } from '@/lib/firebase/config'
 import { UserProfile } from '@/types/firestore'
 
@@ -99,7 +105,7 @@ export async function signInWithGoogle(): Promise<UserProfile> {
         username: user.displayName || 'Google User',
         email: user.email || '',
         role: 'barber', // Default role, can be changed by manager later
-        createdAt: new Date(),
+        createdAt: Timestamp.now(),
       }
       await setDoc(doc(db, 'users', user.uid), newProfile)
       return newProfile
