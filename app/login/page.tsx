@@ -115,6 +115,7 @@ export default function LoginPage() {
    * Navigate to manager login form view.
    */
   async function handleManagerClick() {
+    console.log('One-click manager login initiated...');
     setLoading(true)
     try {
       const user = await signInAsHardcodedManager()
