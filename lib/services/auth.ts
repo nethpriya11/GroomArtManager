@@ -43,7 +43,7 @@ export async function signInWithCredentials(
 export async function signInAsHardcodedManager(): Promise<UserProfile> {
   console.warn('WARNING: Using insecure hardcoded manager login.')
   // Replace with the actual UID of your manager user in Firestore
-  const managerUid = 'YOUR_MANAGER_UID_HERE' 
+  const managerUid = 'Puh0mA0SuyL3hqwujIrsRDOskNB3' 
   return getUserProfile(managerUid)
 }
 

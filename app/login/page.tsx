@@ -114,8 +114,19 @@ export default function LoginPage() {
    *
    * Navigate to manager login form view.
    */
-  function handleManagerClick() {
-    setView('manager-login')
+  async function handleManagerClick() {
+    setLoading(true)
+    try {
+      const user = await signInAsHardcodedManager()
+      login(user)
+      toast.success('Welcome Manager!')
+      router.push('/manager/dashboard')
+    } catch (error) {
+      handleError(error, 'LoginPage.handleManagerClick')
+      toast.error('Failed to log in as Manager.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   /**
