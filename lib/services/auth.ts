@@ -1,4 +1,15 @@
-import { UserProfile } from '@/types/firestore';
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut as firebaseSignOut,
+  onAuthStateChanged,
+  User,
+} from 'firebase/auth'
+import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore'
+import { auth, db } from '@/lib/firebase/config'
+import { UserProfile } from '@/types/firestore'
 
 export async function signInWithCredentials(
   email: string,
