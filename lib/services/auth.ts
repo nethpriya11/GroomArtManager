@@ -1,31 +1,3 @@
-import {
-  signInWithEmailAndPassword,
-  signOut as firebaseSignOut,
-  onAuthStateChanged,
-  User,
-  GoogleAuthProvider,
-  signInWithPopup,
-} from 'firebase/auth'
-import { doc, getDoc, setDoc } from 'firebase/firestore'
-import { auth, db } from '@/lib/firebase/config'
-import { UserProfile } from '@/types/firestore'
-
-/**
- * Authentication service for Firebase Auth
- *
- * Handles user authentication and profile retrieval from Firestore.
- */
-
-/**
- * Sign in with email and password
- *
- * Authenticates a user with their email and password and retrieves their profile from Firestore.
- *
- * @param email - User email address
- * @param password - User password
- * @returns Promise<UserProfile> - User profile
- * @throws Error if authentication fails or profile not found
- */
 export async function signInWithCredentials(
   email: string,
   password: string
@@ -56,6 +28,40 @@ export async function signInWithCredentials(
     }
     throw new Error('Invalid email or password')
   }
+}
+
+/**
+ * Sign in as a hardcoded manager (INSECURE - FOR NON-COMMERCIAL USE ONLY)
+ *
+ * Directly retrieves the manager profile from Firestore without Firebase Auth.
+ * This bypasses authentication and is highly insecure.
+ * The UID must correspond to a manager user in Firestore.
+ *
+ * @returns Promise<UserProfile> - Manager user profile
+ * @throws Error if profile not found
+ */
+export async function signInAsHardcodedManager(): Promise<UserProfile> {
+  console.warn('WARNING: Using insecure hardcoded manager login.')
+  // Replace with the actual UID of your manager user in Firestore
+  const managerUid = 'YOUR_MANAGER_UID_HERE' 
+  return getUserProfile(managerUid)
+}
+
+/**
+ * Sign in as a hardcoded barber (INSECURE - FOR NON-COMMERCIAL USE ONLY)
+ *
+ * Directly retrieves a barber profile from Firestore without Firebase Auth.
+ * This bypasses authentication and is highly insecure.
+ * The UID must correspond to a barber user in Firestore.
+ *
+ * @returns Promise<UserProfile> - Barber user profile
+ * @throws Error if profile not found
+ */
+export async function signInAsHardcodedBarber(): Promise<UserProfile> {
+  console.warn('WARNING: Using insecure hardcoded barber login.')
+  // Replace with the actual UID of a barber user in Firestore
+  const barberUid = 'YOUR_BARBER_UID_HERE' 
+  return getUserProfile(barberUid)
 }
 
 /**

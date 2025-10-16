@@ -146,7 +146,7 @@ export const updateBarberSchema = baseBarberSchema.partial().extend({
  * Schema for login form
  */
 export const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
+  email: z.string().email('Invalid email address').optional(),
   password: z.string().min(6, 'Password must be at least 6 characters'),
 })
 
