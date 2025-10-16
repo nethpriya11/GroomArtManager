@@ -12,8 +12,8 @@ import { Spinner } from '@/components/ui/spinner'
 import { BarberProfileSelection } from '@/components/features/auth/BarberProfileSelection'
 import {
   signInWithCredentials,
-  signInAsManager,
   signInWithGoogle,
+  signInAsHardcodedManager,
 } from '@/lib/services/auth'
 import { useAuthStore } from '@/stores/authStore'
 import { handleError } from '@/lib/utils/error-handler'
