@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import {
   Dialog,
   DialogContent,
@@ -161,6 +162,11 @@ export function BarberFormDialog({
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[600px]">
+        <VisuallyHidden>
+          <DialogTitle>
+            {isEditMode ? 'Edit Barber' : 'Add New Barber'}
+          </DialogTitle>
+        </VisuallyHidden>
         <DialogHeader>
           <DialogTitle>
             {isEditMode ? 'Edit Barber' : 'Add New Barber'}

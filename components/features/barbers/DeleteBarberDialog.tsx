@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import {
   Dialog,
   DialogContent,
@@ -68,6 +69,9 @@ export function DeleteBarberDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
+        <VisuallyHidden>
+          <DialogTitle>Delete Barber</DialogTitle>
+        </VisuallyHidden>
         <DialogHeader>
           <DialogTitle>Delete Barber</DialogTitle>
           <DialogDescription>

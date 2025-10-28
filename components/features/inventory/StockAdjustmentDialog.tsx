@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import {
   Dialog,
   DialogContent,
@@ -122,6 +123,9 @@ export function StockAdjustmentDialog({
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[425px]">
+        <VisuallyHidden>
+          <DialogTitle>Adjust Stock for {item.name}</DialogTitle>
+        </VisuallyHidden>
         <DialogHeader>
           <DialogTitle>Adjust Stock for {item.name}</DialogTitle>
           <DialogDescription>
