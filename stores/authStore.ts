@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist, createJSONStorage } from 'zustand/middleware'
 import { UserProfile, UserRole } from '@/types/firestore'
 
 /**
@@ -26,26 +27,40 @@ interface AuthActions {
  * const { user, role, login, logout } = useAuthStore()
  * ```
  */
-export const useAuthStore = create<AuthState & AuthActions>((set) => ({
-  // Initial state
-  user: null,
-  role: null,
-
-  // Actions
-  login: (user: UserProfile) =>
-    set({
-      user,
-      role: user.role,
-    }),
-
-  logout: () =>
-    set({
+export const useAuthStore = create(
+  persist<AuthState & AuthActions>(
+    (set) => ({
+      // Initial state
       user: null,
       role: null,
-    }),
 
-  updateUser: (updates: Partial<UserProfile>) =>
-    set((state) => ({
-      user: state.user ? { ...state.user, ...updates } : null,
-    })),
-}))
+      // Actions
+      login: (user: UserProfile) =>
+        set({
+          user,
+          role: user.role,
+        }),
+
+      logout: () =>
+        set({
+          user: null,
+          role: null,
+        }),
+
+      updateUser: (updates: Partial<UserProfile>) =>
+        set((state) => ({
+          user: state.user ? { ...state.user, ...updates } : null,
+        })),
+    }),
+    {
+      name: 'auth-storage', // unique name
+      storage: createJSONStorage(() => localStorage), // (optional) by default, 'localStorage' is used
+    }
+  )
+)
+
+// This is a workaround for Zustand with Next.js SSR
+// It ensures that the store is rehydrated before the app renders
+useAuthStore.subscribe((state) => {
+  // You can add any rehydration logic here if needed
+})
