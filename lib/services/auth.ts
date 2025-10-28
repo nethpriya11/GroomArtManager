@@ -78,17 +78,22 @@ export async function signInWithGoogle(): Promise<UserProfile> {
     })
 
     return userProfile
-  } catch (error) {
-    console.error('Google sign-in failed:', error)
-    if (
-      typeof error === 'object' &&
-      error !== null &&
-      'code' in error &&
-      (error as { code: unknown }).code === 'auth/popup-closed-by-user'
-    ) {
-      throw new Error('Google sign-in popup closed.')
+  } catch (error: any) {
+    console.error('Google sign-in failed with error:', error)
+
+    // Handle specific Firebase error codes
+    if (error.code === 'auth/popup-closed-by-user') {
+      throw new Error('Google sign-in popup was closed by the user.')
     }
-    throw new Error('Failed to sign in with Google. Please try again.')
+
+    // Create a more informative error message
+    const errorMessage =
+      `Failed to sign in with Google. ` +
+      `Error Code: ${error.code}. ` +
+      `Error Message: ${error.message}`
+
+    // Re-throw a new error with the detailed message
+    throw new Error(errorMessage)
   }
 }
 

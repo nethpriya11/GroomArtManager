@@ -49,6 +49,9 @@ export default function LoginPage() {
       toast.success('Welcome back!')
       router.push('/manager/dashboard')
     } catch (error) {
+      // Log the full error to the console for detailed debugging
+      console.error('[LoginPage.handleGoogleLogin] Detailed Error:', error)
+
       handleError(error, 'LoginPage.handleGoogleLogin')
       if (error instanceof Error) {
         toast.error(error.message)
