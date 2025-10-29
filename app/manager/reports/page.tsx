@@ -1,22 +1,10 @@
 'use client'
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { Navigation } from '@/components/features/common/Navigation'
 import { DailyReportView } from '@/components/features/reports/DailyReportView'
 import { DetailedLedger } from '@/components/features/reports/DetailedLedger'
-import { useAuthStore } from '@/stores/authStore'
 
 export default function ManagerReportsPage() {
-  const router = useRouter()
-  const { user } = useAuthStore()
-
-  useEffect(() => {
-    if (!user || user.role !== 'manager') {
-      router.push('/login')
-    }
-  }, [user, router])
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white">
       <Navigation role="manager" />

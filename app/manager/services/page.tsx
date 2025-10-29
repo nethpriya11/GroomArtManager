@@ -1,10 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { Plus } from 'lucide-react'
 import { Navigation } from '@/components/features/common/Navigation'
-import { useAuthStore } from '@/stores/authStore'
 import { Button } from '@/components/ui/button'
 import { ServiceFormDialog } from '@/components/features/services/ServiceFormDialog'
 import { DeleteServiceDialog } from '@/components/features/services/DeleteServiceDialog'
@@ -19,9 +17,6 @@ import type { Service } from '@/types/firestore'
  * Services can be created, edited, and deleted.
  */
 export default function ManagerServicesPage() {
-  const router = useRouter()
-  const user = useAuthStore((state) => state.user)
-  const role = useAuthStore((state) => state.role)
   const [formDialogOpen, setFormDialogOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [selectedService, setSelectedService] = useState<Service | null>(null)
@@ -42,16 +37,6 @@ export default function ManagerServicesPage() {
   const handleDeleteService = (service: Service) => {
     setSelectedService(service)
     setDeleteDialogOpen(true)
-  }
-
-  useEffect(() => {
-    if (!user || role !== 'manager') {
-      router.push('/login')
-    }
-  }, [user, role, router])
-
-  if (!user || role !== 'manager') {
-    return null
   }
 
   return (

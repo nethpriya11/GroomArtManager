@@ -12,10 +12,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { useAuthStore } from '@/stores/authStore'
-import { signOut } from '@/lib/services/auth'
-import { handleError } from '@/lib/utils/error-handler'
-import { toast } from 'sonner'
+import { useRoleStore } from '@/stores/roleStore'
 
 interface NavigationProps {
   role: 'manager' | 'barber'
@@ -34,8 +31,7 @@ interface NavigationProps {
 export function Navigation({ role }: NavigationProps) {
   const pathname = usePathname()
   const router = useRouter()
-  const logout = useAuthStore((state) => state.logout)
-  const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const clearRole = useRoleStore((state) => state.clearRole)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const managerLinks = [
@@ -50,18 +46,9 @@ export function Navigation({ role }: NavigationProps) {
 
   const links = role === 'manager' ? managerLinks : barberLinks
 
-  async function handleLogout() {
-    setIsLoggingOut(true)
-    try {
-      await signOut()
-      logout()
-      toast.success('Logged out successfully')
-      router.push('/login')
-    } catch (error) {
-      handleError(error, 'Navigation.handleLogout')
-    } finally {
-      setIsLoggingOut(false)
-    }
+  function handleLogout() {
+    clearRole()
+    router.push('/login')
   }
 
   function NavLinks({ onLinkClick }: { onLinkClick?: () => void }) {
@@ -107,11 +94,10 @@ export function Navigation({ role }: NavigationProps) {
               variant="ghost"
               size="sm"
               onClick={handleLogout}
-              disabled={isLoggingOut}
               className="text-gray-400 hover:text-white"
             >
               <LogOut className="h-4 w-4 mr-2" />
-              {isLoggingOut ? 'Logging out...' : 'Logout'}
+              Logout
             </Button>
           </div>
 
@@ -135,11 +121,10 @@ export function Navigation({ role }: NavigationProps) {
                   <Button
                     variant="ghost"
                     onClick={handleLogout}
-                    disabled={isLoggingOut}
                     className="text-gray-400 hover:text-white justify-start"
                   >
                     <LogOut className="h-4 w-4 mr-2" />
-                    {isLoggingOut ? 'Logging out...' : 'Logout'}
+                    Logout
                   </Button>
                 </div>
               </SheetContent>

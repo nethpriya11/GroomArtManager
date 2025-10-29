@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Edit, Trash2, SlidersHorizontal } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils/formatters'
 import type { InventoryItem } from '@/types/inventory'
+import { Timestamp } from 'firebase/firestore'
 
 interface InventoryListTableProps {
   items: InventoryItem[]
@@ -24,6 +25,13 @@ export function InventoryListTable({
   onDelete,
   onAdjustStock,
 }: InventoryListTableProps) {
+  const toDate = (timestamp: Timestamp | Date): Date => {
+    if (timestamp instanceof Timestamp) {
+      return timestamp.toDate()
+    }
+    return timestamp
+  }
+
   return (
     <div className="bg-gray-900/50 rounded-xl p-6 border border-gray-800">
       <Table>
@@ -71,7 +79,7 @@ export function InventoryListTable({
               <TableCell>{item.unitOfMeasure}</TableCell>
               <TableCell>
                 {item.lastUpdated
-                  ? new Date(item.lastUpdated).toLocaleDateString()
+                  ? toDate(item.lastUpdated).toLocaleDateString()
                   : 'N/A'}
               </TableCell>
               <TableCell className="text-right">

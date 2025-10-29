@@ -1,12 +1,9 @@
 'use client'
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { Navigation } from '@/components/features/common/Navigation'
 import { DashboardKPIs } from '@/components/features/dashboard/DashboardKPIs'
 import { PendingApprovalsTable } from '@/components/features/dashboard/PendingApprovalsTable'
 import { ManagerServiceLogForm } from '@/components/features/service-logs/ManagerServiceLogForm'
-import { useAuthStore } from '@/stores/authStore'
 
 /**
  * Manager Dashboard Page
@@ -15,26 +12,8 @@ import { useAuthStore } from '@/stores/authStore'
  * - Navigation bar with links to Barbers, Services, Approvals, Reports
  * - Real-time KPI cards showing key metrics
  * - Pending approvals table preview
- *
- * Route protection: Only accessible to authenticated users with role='manager'
  */
 export default function ManagerDashboardPage() {
-  const router = useRouter()
-  const user = useAuthStore((state) => state.user)
-  const role = useAuthStore((state) => state.role)
-
-  // Client-side auth protection
-  useEffect(() => {
-    if (!user || role !== 'manager') {
-      router.push('/login')
-    }
-  }, [user, role, router])
-
-  // Show loading state while checking auth
-  if (!user || role !== 'manager') {
-    return null
-  }
-
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
       {/* Navigation */}
@@ -45,7 +24,7 @@ export default function ManagerDashboardPage() {
         {/* Welcome Section */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">
-            Welcome back, {user.username}!
+            Welcome back, Manager!
           </h1>
           <p className="text-gray-400">
             Here&apos;s what&apos;s happening with your salon today.

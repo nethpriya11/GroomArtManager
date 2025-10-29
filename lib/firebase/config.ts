@@ -1,11 +1,9 @@
-
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app'
 import {
   getFirestore,
   Firestore,
   connectFirestoreEmulator,
 } from 'firebase/firestore'
-import { getAuth, Auth, connectAuthEmulator } from 'firebase/auth'
 
 /**
  * Firebase configuration from environment variables
@@ -23,29 +21,28 @@ const firebaseConfig = {
  * Validate Firebase configuration
  */
 function validateFirebaseConfig() {
-  console.log("--- Debugging Environment Variables ---");
-  console.log("NEXT_PUBLIC_FIREBASE_API_KEY:", process.env.NEXT_PUBLIC_FIREBASE_API_KEY ? "FOUND" : "MISSING");
-  console.log("NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN:", process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ? "FOUND" : "MISSING");
-  console.log("NEXT_PUBLIC_FIREBASE_PROJECT_ID:", process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ? "FOUND" : "MISSING");
-  console.log("NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET:", process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET ? "FOUND" : "MISSING");
-  console.log("NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID:", process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID ? "FOUND" : "MISSING");
-  console.log("NEXT_PUBLIC_FIREBASE_APP_ID:", process.env.NEXT_PUBLIC_FIREBASE_APP_ID ? "FOUND" : "MISSING");
-  console.log("------------------------------------");
+  console.log('--- Debugging Environment Variables ---')
+  console.log(
+    'NEXT_PUBLIC_FIREBASE_API_KEY:',
+    process.env.NEXT_PUBLIC_FIREBASE_API_KEY ? 'FOUND' : 'MISSING'
+  )
+  console.log(
+    'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN:',
+    process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ? 'FOUND' : 'MISSING'
+  )
+  console.log(
+    'NEXT_PUBLIC_FIREBASE_PROJECT_ID:',
+    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ? 'FOUND' : 'MISSING'
+  )
+  console.log('------------------------------------')
 
-  const requiredKeys = [
-    'apiKey',
-    'authDomain',
-    'projectId',
-    'storageBucket',
-    'messagingSenderId',
-    'appId',
-  ] as const
+  const requiredKeys = ['apiKey', 'authDomain', 'projectId'] as const
 
   const missingKeys = requiredKeys.filter((key) => !firebaseConfig[key])
 
   if (missingKeys.length > 0) {
     throw new Error(
-      `Missing required Firebase environment variables: ${missingKeys.map((key) => `NEXT_PUBLIC_FIREBASE_${key.toUpperCase().replace(/([A-Z])/g, '_$1')}`).join(', ')}`
+      `Missing required Firebase environment variables for Firestore: ${missingKeys.map((key) => `NEXT_PUBLIC_FIREBASE_${key.toUpperCase().replace(/([A-Z])/g, '_$1')}`).join(', ')}`
     )
   }
 }
@@ -70,11 +67,6 @@ if (!getApps().length) {
 const db: Firestore = getFirestore(app)
 
 /**
- * Initialize Firebase Authentication
- */
-const auth: Auth = getAuth(app)
-
-/**
  * Connect to Firebase Emulators if in development mode
  */
 if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
@@ -85,12 +77,6 @@ if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
       // Connect to Firestore Emulator
       connectFirestoreEmulator(db, 'localhost', 8081)
       console.log('🔥 Connected to Firestore Emulator on port 8081')
-
-      // Connect to Auth Emulator
-      connectAuthEmulator(auth, 'http://localhost:9099', {
-        disableWarnings: true,
-      })
-      console.log('🔥 Connected to Auth Emulator on port 9099')
     } catch (error) {
       // Emulator already connected (happens on hot reload)
       console.warn('Emulator connection already established')
@@ -98,4 +84,4 @@ if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
   }
 }
 
-export { app, db, auth }
+export { app, db }

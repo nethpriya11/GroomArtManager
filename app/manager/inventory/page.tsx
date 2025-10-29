@@ -1,9 +1,7 @@
 'use client'
 
-import { useEffect, useState, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useMemo } from 'react'
 import { Navigation } from '@/components/features/common/Navigation'
-import { useAuthStore } from '@/stores/authStore'
 import { useInventoryItems } from '@/hooks/useInventory'
 import { InventoryItemDialog } from '@/components/features/inventory/InventoryItemDialog'
 import { StockAdjustmentDialog } from '@/components/features/inventory/StockAdjustmentDialog'
@@ -11,22 +9,7 @@ import { KPICard } from '@/components/features/common/KPICard'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import {
-  PlusCircle,
-  Edit,
-  Trash2,
-  Loader2,
-  Search,
-  SlidersHorizontal,
-} from 'lucide-react'
+import { PlusCircle, Loader2, Search } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils/formatters'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { deleteInventoryItem } from '@/lib/firebase/repositories/inventory-repository'
@@ -35,9 +18,6 @@ import { toast } from 'sonner'
 import type { InventoryItem } from '@/types/inventory'
 
 export default function ManagerInventoryPage() {
-  const router = useRouter()
-  const user = useAuthStore((state) => state.user)
-  const role = useAuthStore((state) => state.role)
   const { data: inventoryItems, isLoading, error } = useInventoryItems()
   const [isItemDialogOpen, setIsItemDialogOpen] = useState(false)
   const [isAdjustmentDialogOpen, setIsAdjustmentDialogOpen] = useState(false)
@@ -46,12 +26,6 @@ export default function ManagerInventoryPage() {
   const [filterCategory, setFilterCategory] = useState('all')
   const [filterBrand, setFilterBrand] = useState('all')
   const queryClient = useQueryClient()
-
-  useEffect(() => {
-    if (!user || role !== 'manager') {
-      router.push('/login')
-    }
-  }, [user, role, router])
 
   const filteredItems = useMemo(() => {
     if (!inventoryItems) return []
@@ -130,10 +104,6 @@ export default function ManagerInventoryPage() {
     if (window.confirm('Are you sure you want to delete this item?')) {
       deleteItemMutation.mutate(itemId)
     }
-  }
-
-  if (!user || role !== 'manager') {
-    return null
   }
 
   return (

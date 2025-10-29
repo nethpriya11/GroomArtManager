@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Loader2, Plus, Check } from 'lucide-react'
 import { createServiceLog } from '@/lib/firebase/repositories/service-log-repository'
 import { useServices } from '@/hooks/useServices'
-import { useAuthStore } from '@/stores/authStore'
+import { useBarberStore } from '@/stores/barberStore'
 import { formatCurrency } from '@/lib/utils/formatters'
 import type { Service } from '@/types/firestore'
 
@@ -21,7 +21,7 @@ import type { Service } from '@/types/firestore'
  */
 export function ServiceLogForm() {
   const queryClient = useQueryClient()
-  const user = useAuthStore((state) => state.user)
+  const { selectedBarber } = useBarberStore()
   const [selectedServices, setSelectedServices] = useState<Set<string>>(
     new Set()
   )
@@ -38,8 +38,8 @@ export function ServiceLogForm() {
       serviceIds: string[]
       prices: Record<string, number>
     }) => {
-      if (!user?.id) {
-        throw new Error('User data missing')
+      if (!selectedBarber?.id) {
+        throw new Error('Barber data missing')
       }
 
       const servicesToLog =
@@ -49,7 +49,7 @@ export function ServiceLogForm() {
       const logPromises = servicesToLog.map((service) => {
         const price = prices[service.id] || service.price
         return createServiceLog({
-          barberId: user.id,
+          barberId: selectedBarber.id,
           serviceId: service.id,
           price: price,
           commissionRate: service.commissionRate,

@@ -1,28 +1,10 @@
 'use client'
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { useAuthStore } from '@/stores/authStore'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { LogIn, Scissors } from 'lucide-react'
 
 export default function Home() {
-  const router = useRouter()
-  const user = useAuthStore((state) => state.user)
-  const role = useAuthStore((state) => state.role)
-
-  // Redirect logged-in users to their dashboard
-  useEffect(() => {
-    if (user && role) {
-      if (role === 'manager') {
-        router.push('/manager/dashboard')
-      } else if (role === 'barber') {
-        router.push('/barber/dashboard')
-      }
-    }
-  }, [user, role, router])
-
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-[#0a0a0a]">
       <div className="text-center space-y-6">

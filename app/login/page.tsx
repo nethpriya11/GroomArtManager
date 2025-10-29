@@ -4,72 +4,31 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { User, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Spinner } from '@/components/ui/spinner'
 import { BarberProfileSelection } from '@/components/features/auth/BarberProfileSelection'
-import { signInWithGoogle } from '@/lib/services/auth'
-import { useAuthStore } from '@/stores/authStore'
-import { handleError } from '@/lib/utils/error-handler'
-import { toast } from 'sonner'
+import { useRoleStore } from '@/stores/roleStore'
 
 /**
  * Login page for role selection
  *
  * Users select whether they are a Manager or Barber.
- * - Manager: Signs in with Google and is verified as a manager.
+ * - Manager: Navigates to the manager dashboard.
  * - Barber: Shows barber selection view to choose a specific barber profile.
  */
 export default function LoginPage() {
   const router = useRouter()
-  const login = useAuthStore((state) => state.login)
-  const [loading, setLoading] = useState(false)
+  const setRole = useRoleStore((state) => state.setRole)
   const [view, setView] = useState<'role-selection' | 'barber-selection'>(
     'role-selection'
   )
 
   /**
-   * Handle Google login for Managers
-   *
-   * Authenticates user with Google, verifies their role is 'manager',
-   * and redirects to the manager dashboard.
-   */
-  async function handleGoogleLogin() {
-    setLoading(true)
-    try {
-      const user = await signInWithGoogle()
-
-      // Role verification
-      if (user.role !== 'manager') {
-        toast.error('Access denied. Please sign in with a manager account.')
-        // NOTE: Consider signing the user out here if signInWithGoogle leaves them authenticated.
-        // For now, we just prevent login and navigation.
-        return
-      }
-
-      login(user)
-      toast.success('Welcome back!')
-      router.push('/manager/dashboard')
-    } catch (error) {
-      // Log the full error to the console for detailed debugging
-      console.error('[LoginPage.handleGoogleLogin] Detailed Error:', error)
-
-      handleError(error, 'LoginPage.handleGoogleLogin')
-      if (error instanceof Error) {
-        toast.error(error.message)
-      } else {
-        toast.error('An unexpected error occurred.')
-      }
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  /**
    * Handle Manager button click
    *
-   * Initiates the Google login flow for managers.
+   * Navigates to the manager dashboard.
    */
   function handleManagerClick() {
-    handleGoogleLogin()
+    setRole('manager')
+    router.push('/manager/dashboard')
   }
 
   /**
@@ -112,8 +71,7 @@ export default function LoginPage() {
               variant="outline"
               size="lg"
               onClick={handleManagerClick}
-              disabled={loading}
-              aria-label="Login as Manager"
+              aria-label="Continue as Manager"
             >
               <div className="flex items-center gap-3">
                 <User className="h-6 w-6" />
@@ -127,8 +85,7 @@ export default function LoginPage() {
               variant="outline"
               size="lg"
               onClick={handleBarberClick}
-              disabled={loading}
-              aria-label="Login as Barber"
+              aria-label="Continue as Barber"
             >
               <div className="flex items-center gap-3">
                 <Users className="h-6 w-6" />

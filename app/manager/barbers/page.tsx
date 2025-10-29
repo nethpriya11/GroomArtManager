@@ -1,10 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { Plus } from 'lucide-react'
 import { Navigation } from '@/components/features/common/Navigation'
-import { useAuthStore } from '@/stores/authStore'
 import { Button } from '@/components/ui/button'
 import { BarberFormDialog } from '@/components/features/barbers/BarberFormDialog'
 import { DeleteBarberDialog } from '@/components/features/barbers/DeleteBarberDialog'
@@ -18,9 +16,6 @@ import type { UserProfile } from '@/types/firestore'
  * Barbers can be created, edited, and deleted.
  */
 export default function ManagerBarbersPage() {
-  const router = useRouter()
-  const user = useAuthStore((state) => state.user)
-  const role = useAuthStore((state) => state.role)
   const [formDialogOpen, setFormDialogOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [selectedBarber, setSelectedBarber] = useState<UserProfile | null>(null)
@@ -41,16 +36,6 @@ export default function ManagerBarbersPage() {
   const handleDeleteBarber = (barber: UserProfile) => {
     setSelectedBarber(barber)
     setDeleteDialogOpen(true)
-  }
-
-  useEffect(() => {
-    if (!user || role !== 'manager') {
-      router.push('/login')
-    }
-  }, [user, role, router])
-
-  if (!user || role !== 'manager') {
-    return null
   }
 
   return (

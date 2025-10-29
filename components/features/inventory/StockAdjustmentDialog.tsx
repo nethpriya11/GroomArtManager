@@ -27,7 +27,6 @@ import {
   createStockAdjustment,
   updateInventoryItem,
 } from '@/lib/firebase/repositories/inventory-repository'
-import { useAuthStore } from '@/stores/authStore'
 import type { InventoryItem } from '@/types/inventory'
 import {
   Select,
@@ -49,7 +48,6 @@ export function StockAdjustmentDialog({
   item,
 }: StockAdjustmentDialogProps) {
   const queryClient = useQueryClient()
-  const { user } = useAuthStore()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const {
@@ -67,7 +65,7 @@ export function StockAdjustmentDialog({
       quantity: 1,
       type: 'deduct',
       reason: '',
-      adjustedBy: user?.id || '',
+      adjustedBy: 'manager',
     },
   })
 
@@ -102,14 +100,10 @@ export function StockAdjustmentDialog({
   })
 
   const onSubmit = (data: StockAdjustmentInput) => {
-    if (!user?.id) {
-      toast.error('User not authenticated.')
-      return
-    }
     createAdjustmentMutation.mutate({
       ...data,
       itemId: item.id,
-      adjustedBy: user.id,
+      adjustedBy: 'manager',
     })
   }
 
@@ -191,7 +185,7 @@ export function StockAdjustmentDialog({
             <Textarea
               id="reason"
               {...register('reason')}
-              disabled={isSubmitting}
+              disabled={_isSubmitting}
               className="col-span-3"
             />
             {errors.reason && (

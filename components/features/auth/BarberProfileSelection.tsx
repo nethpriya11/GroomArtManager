@@ -6,13 +6,10 @@ import { User } from 'lucide-react'
 import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 import { Spinner } from '@/components/ui/spinner'
 import { useBarbers } from '@/hooks/useBarbers'
-import { signInAsBarber } from '@/lib/services/auth'
-import { useAuthStore } from '@/stores/authStore'
-import { handleError } from '@/lib/utils/error-handler'
+import { useRoleStore } from '@/stores/roleStore'
+import { useBarberStore } from '@/stores/barberStore'
 import { UserProfile } from '@/types/firestore'
 import Image from 'next/image'
-
-import { BarberLoginForm } from './BarberLoginForm'
 
 interface BarberProfileSelectionProps {
   onBack: () => void
@@ -21,15 +18,15 @@ interface BarberProfileSelectionProps {
 export function BarberProfileSelection({
   onBack,
 }: BarberProfileSelectionProps) {
+  const router = useRouter()
+  const setRole = useRoleStore((state) => state.setRole)
+  const setSelectedBarber = useBarberStore((state) => state.setSelectedBarber)
   const { data: barbers, isLoading, error } = useBarbers()
-  const [selectedBarber, setSelectedBarber] = useState<UserProfile | null>(null)
 
   function handleBarberSelect(barber: UserProfile) {
+    setRole('barber')
     setSelectedBarber(barber)
-  }
-
-  function handleBackToSelection() {
-    setSelectedBarber(null)
+    router.push('/barber/dashboard')
   }
 
   if (isLoading) {
@@ -51,12 +48,6 @@ export function BarberProfileSelection({
           Go back
         </button>
       </div>
-    )
-  }
-
-  if (selectedBarber) {
-    return (
-      <BarberLoginForm barber={selectedBarber} onBack={handleBackToSelection} />
     )
   }
 
