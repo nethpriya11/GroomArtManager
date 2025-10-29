@@ -25,11 +25,31 @@ export function InventoryListTable({
   onDelete,
   onAdjustStock,
 }: InventoryListTableProps) {
-  const toDate = (timestamp: Timestamp | Date): Date => {
+  const formatDate = (timestamp: any): string => {
+    if (!timestamp) return 'N/A'
+
     if (timestamp instanceof Timestamp) {
-      return timestamp.toDate()
+      return timestamp.toDate().toLocaleDateString()
     }
-    return timestamp
+    if (timestamp instanceof Date) {
+      return timestamp.toLocaleDateString()
+    }
+    // This will handle serialized Timestamps that are just objects
+    if (typeof timestamp === 'object' && timestamp.seconds) {
+      return new Date(timestamp.seconds * 1000).toLocaleDateString()
+    }
+    // This will handle numbers (epoch ms)
+    if (typeof timestamp === 'number') {
+      return new Date(timestamp).toLocaleDateString()
+    }
+
+    // As a fallback for other unexpected types.
+    const date = new Date(timestamp)
+    if (!isNaN(date.getTime())) {
+      return date.toLocaleDateString()
+    }
+
+    return 'Invalid Date'
   }
 
   return (
@@ -77,11 +97,7 @@ export function InventoryListTable({
               <TableCell>{formatCurrency(item.costPrice)}</TableCell>
               <TableCell>{item.reorderPoint}</TableCell>
               <TableCell>{item.unitOfMeasure}</TableCell>
-              <TableCell>
-                {item.lastUpdated
-                  ? toDate(item.lastUpdated).toLocaleDateString()
-                  : 'N/A'}
-              </TableCell>
+              <TableCell>{formatDate(item.lastUpdated)}</TableCell>
               <TableCell className="text-right">
                 <Button
                   variant="ghost"
