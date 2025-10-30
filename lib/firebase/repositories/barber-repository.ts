@@ -36,33 +36,19 @@ const COLLECTION_NAME = 'users'
  */
 export async function createBarber(data: {
   username: string
-  password: string
   avatarUrl?: string | null
 }): Promise<UserProfile> {
-  const auth = getAuth()
-  const email = `${data.username.toLowerCase().replace(/\s/g, '')}@salonflow.com`
-
-  // 1. Create user in Firebase Auth
-  const userCredential = await createUserWithEmailAndPassword(
-    auth,
-    email,
-    data.password
-  )
-  const uid = userCredential.user.uid
-
-  // 2. Create user profile in Firestore
   const barberData = {
     username: data.username,
-    email: email,
     role: 'barber' as const,
     avatarUrl: data.avatarUrl || null,
     createdAt: Timestamp.now(),
   }
 
-  await setDoc(doc(db, COLLECTION_NAME, uid), barberData)
+  const docRef = await addDoc(collection(db, COLLECTION_NAME), barberData)
 
   return {
-    id: uid,
+    id: docRef.id,
     ...barberData,
   }
 }
