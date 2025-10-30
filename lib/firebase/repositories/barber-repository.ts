@@ -50,7 +50,7 @@ export async function createBarber(data: {
   return {
     id: docRef.id,
     ...barberData,
-  }
+  } as UserProfile
 }
 
 /**

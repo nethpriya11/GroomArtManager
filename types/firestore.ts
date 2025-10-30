@@ -53,7 +53,9 @@ export interface ServiceLog {
 /**
  * User profile creation data (without auto-generated fields)
  */
-export type UserProfileCreate = Omit<UserProfile, 'id' | 'createdAt'>
+export type UserProfileCreate = Omit<UserProfile, 'id' | 'createdAt'> & {
+  email?: string
+}
 
 /**
  * Service creation data (without auto-generated fields)
