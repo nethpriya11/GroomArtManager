@@ -124,7 +124,6 @@ export const baseBarberSchema = z.object({
  * Schema for creating a new barber (form validation)
  */
 export const createBarberSchema = baseBarberSchema.extend({
-  password: z.string().min(6, 'Password must be at least 6 characters'),
   commissionRate: z
     .number()
     .min(0, 'Commission rate must be at least 0%')
@@ -134,13 +133,7 @@ export const createBarberSchema = baseBarberSchema.extend({
 /**
  * Schema for updating barber (partial updates)
  */
-export const updateBarberSchema = baseBarberSchema.partial().extend({
-  password: z
-    .string()
-    .min(6, 'Password must be at least 6 characters')
-    .optional()
-    .or(z.literal('')),
-})
+export const updateBarberSchema = baseBarberSchema.partial()
 
 /**
  * Schema for login form

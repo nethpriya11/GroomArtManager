@@ -61,7 +61,6 @@ export function BarberFormDialog({
         }
       : {
           username: '',
-          password: '',
         },
   })
 
@@ -73,7 +72,6 @@ export function BarberFormDialog({
     } else if (open && !barber) {
       reset({
         username: '',
-        password: '',
       })
     }
   }, [open, barber, reset])
@@ -192,44 +190,6 @@ export function BarberFormDialog({
               <p className="text-sm text-red-500">{errors.username.message}</p>
             )}
           </div>
-
-          {/* Password (only for new barber) */}
-          {!isEditMode && (
-            <div className="space-y-2">
-              <Label htmlFor="password">Password *</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter password"
-                {...register('password')}
-                disabled={isSubmitting}
-              />
-              {errors.password && (
-                <p className="text-sm text-red-500">
-                  {errors.password.message}
-                </p>
-              )}
-            </div>
-          )}
-
-          {/* Password (optional for existing barber) */}
-          {isEditMode && (
-            <div className="space-y-2">
-              <Label htmlFor="password">New Password (optional)</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter new password to change"
-                {...register('password')}
-                disabled={isSubmitting}
-              />
-              {errors.password && (
-                <p className="text-sm text-red-500">
-                  {errors.password.message}
-                </p>
-              )}
-            </div>
-          )}
 
           <DialogFooter>
             <Button
