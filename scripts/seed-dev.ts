@@ -17,8 +17,8 @@ import { getAuth } from 'firebase-admin/auth'
 import { getFirestore, Timestamp } from 'firebase-admin/firestore'
 
 // Initialize Firebase Admin SDK for emulator
-process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8081'
-process.env.FIREBASE_AUTH_EMULATOR_HOST = 'localhost:9099'
+process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8081'
+process.env.FIREBASE_AUTH_EMULATOR_HOST = '127.0.0.1:9099'
 
 const app = initializeApp({
   projectId: 'salonflow-prod',
@@ -189,6 +189,7 @@ async function clearCollections() {
     const listUsersResult = await auth.listUsers()
     for (const userRecord of listUsersResult.users) {
       await auth.deleteUser(userRecord.uid)
+.
     }
     console.log(`  ✓ Cleared all Auth users`)
   } catch (error) {

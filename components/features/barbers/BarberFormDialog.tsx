@@ -61,6 +61,7 @@ export function BarberFormDialog({
         }
       : {
           username: '',
+          commissionRate: 0.5, // Default to 50%
         },
   })
 
@@ -72,6 +73,7 @@ export function BarberFormDialog({
     } else if (open && !barber) {
       reset({
         username: '',
+        commissionRate: 0.5,
       })
     }
   }, [open, barber, reset])
@@ -188,6 +190,26 @@ export function BarberFormDialog({
             />
             {errors.username && (
               <p className="text-sm text-red-500">{errors.username.message}</p>
+            )}
+          </div>
+
+          {/* Commission Rate */}
+          <div className="space-y-2">
+            <Label htmlFor="commissionRate">Commission Rate *</Label>
+            <Input
+              id="commissionRate"
+              type="number"
+              step="0.01"
+              min="0"
+              max="1"
+              placeholder="e.g., 0.5 for 50%"
+              {...register('commissionRate', { valueAsNumber: true })}
+              disabled={isSubmitting}
+            />
+            {errors.commissionRate && (
+              <p className="text-sm text-red-500">
+                {errors.commissionRate.message}
+              </p>
             )}
           </div>
 
