@@ -16,7 +16,7 @@ export type ServiceLogStatus = 'pending' | 'approved' | 'rejected'
 export interface UserProfile {
   id: string // Firebase Auth UID
   username: string // Display name
-  email: string // User email address
+  email?: string // User email address
   role: UserRole
   avatarUrl?: string | null // URL for the user's avatar image
   createdAt: Timestamp
