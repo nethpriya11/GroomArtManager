@@ -185,7 +185,7 @@ export function StockAdjustmentDialog({
             <Textarea
               id="reason"
               {...register('reason')}
-              disabled={_isSubmitting}
+              disabled={isSubmitting}
               className="col-span-3"
             />
             {errors.reason && (
