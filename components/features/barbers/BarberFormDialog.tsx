@@ -57,9 +57,11 @@ export function BarberFormDialog({
     defaultValues: barber
       ? {
           username: barber.username,
+          email: barber.email,
         }
       : {
           username: '',
+          email: '',
           password: '',
         },
   })
@@ -68,10 +70,12 @@ export function BarberFormDialog({
     if (open && barber) {
       reset({
         username: barber.username,
+        email: barber.email,
       })
     } else if (open && !barber) {
       reset({
         username: '',
+        email: '',
         password: '',
       })
     }
@@ -184,6 +188,21 @@ export function BarberFormDialog({
             />
             {errors.username && (
               <p className="text-sm text-red-500">{errors.username.message}</p>
+            )}
+          </div>
+
+          {/* Email */}
+          <div className="space-y-2">
+            <Label htmlFor="email">Email *</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="e.g., john.smith@example.com"
+              {...register('email')}
+              disabled={isSubmitting}
+            />
+            {errors.email && (
+              <p className="text-sm text-red-500">{errors.email.message}</p>
             )}
           </div>
 

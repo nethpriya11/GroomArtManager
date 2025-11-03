@@ -57,7 +57,8 @@ export const createServiceSchema = z.object({
   commissionRate: z
     .number()
     .min(0, 'Commission rate must be at least 0%')
-    .max(1, 'Commission rate must be at most 100%'),
+    .max(1, 'Commission rate must be at most 100%')
+    .optional(),
 })
 
 /**
@@ -118,6 +119,7 @@ export const updateServiceLogStatusSchema = z.object({
  */
 export const baseBarberSchema = z.object({
   username: z.string().min(1, 'Username is required'),
+  email: z.string().email('Invalid email address'),
 })
 
 /**
