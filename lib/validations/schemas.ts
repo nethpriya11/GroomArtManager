@@ -140,6 +140,11 @@ export const updateBarberSchema = baseBarberSchema.partial().extend({
     .min(6, 'Password must be at least 6 characters')
     .optional()
     .or(z.literal('')),
+  commissionRate: z
+    .number()
+    .min(0, 'Commission rate must be at least 0%')
+    .max(1, 'Commission rate must be at most 100%')
+    .optional(),
 })
 
 /**
